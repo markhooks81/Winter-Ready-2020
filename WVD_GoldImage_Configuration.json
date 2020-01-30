@@ -1,0 +1,102 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"publisher": {
+			"type": "string",
+			"defaultValue": "MicrosoftWindowsDesktop"
+		},
+		"offer": {
+			"type": "string",
+			"defaultValue": "windows-10"
+		},
+		"sku": {
+			"type": "string",
+			"defaultValue": "19h1-evd"
+		},
+		"version": {
+			"type": "string",
+			"defaultValue": "18362.476.1911072223",
+			"metadata": {
+				"description": "Version of the image, can be found with powershell: Get-AzVMImage -Location westeurope -PublisherName MicrosoftWindowsDesktop -Offer windows-10 -Skus 19h1-evd"
+			}
+		},
+		"ScriptUri": {
+			"type": "string",
+			"defaultValue": "https://buildscripts.blob.core.windows.net/buildscripts/WVD_GoldImage_Configuration.ps1",
+			"metadata": {
+				"description": "Location of powershell script to customize your image"
+			}
+		},
+		"SIGImageDefinitionId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "Id of Shared Image Gallery to distribute image to, eg: /subscriptions/<subscriptionID>/resourceGroups/<SIG resourcegroup>/providers/Microsoft.Compute/galleries/<SIG name>/images/<image definition>"
+			}
+		},
+		"ManagedImageName": {
+			"type": "string",
+			"defaultValue": "AIB-Image-v1.1",
+			"metadata": {
+				"description": "Name of the managed image, it will be created in the AIB resourcegroup"
+			}
+		},
+		"randomGUID": {
+			"type": "string",
+			"defaultValue": "",
+			"defaultValue": "[newGuid()]"
+		}
+	},
+	"variables": {
+		"imageTemplateName": "[concat('AIB',uniqueString('deployment().name',parameters('randomGUID')))]",
+		"ManagedImageId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Compute/images/',parameters('ManagedImageName'))]"
+	},
+	"resources": [
+		{
+			"name": "[variables('imageTemplateName')]",
+			"type": "Microsoft.VirtualMachineImages/imageTemplates",
+			"apiVersion": "2019-05-01-preview",
+			"location": "[resourcegroup().location]",
+			"dependsOn": [
+			],
+			"properties": {
+				"source": {
+					"type": "PlatformImage",
+					"publisher": "[parameters('publisher')]",
+					"offer": "[parameters('offer')]",
+					"sku": "[parameters('sku')]",
+					"version": "[parameters('version')]"
+				},
+				"customize": [
+					{
+						"type": "PowerShell",
+						"name": "InstallApps",
+						"scriptUri": "[parameters('ScriptUri')]"
+					},
+					{
+						"type": "WindowsRestart",
+						"restartTimeout": "30m"
+					}
+				],
+				"distribute": [
+					{
+						"type": "ManagedImage",
+						"imageId": "[variables('ManagedImageId')]",
+						"location": "[resourceGroup().location]",
+						"runOutputName": "AIBimage",
+						"artifactTags": {
+						}
+					}
+				]
+			}
+		}
+	],
+	"outputs": {
+		"ImageTemplateName": {
+			"type": "string",
+			"value": "[variables('imageTemplateName')]"
+		}
+	}
+}
+
