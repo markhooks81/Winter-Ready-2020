@@ -30,7 +30,7 @@
 		},
 		"ManagedImageName": {
 			"type": "string",
-			"defaultValue": "AIB-Image-v1.4",
+			"defaultValue": "AIB-Image-v1.3",
 			"metadata": {
 				"description": "Name of the managed image, it will be created in the AIB resourcegroup"
 			}
@@ -73,13 +73,19 @@
 					}
 				],
 				"distribute": [
-					{
-						"type": "ManagedImage",
-						"imageId": "[variables('ManagedImageId')]",
-						"location": "[resourceGroup().location]",
-						"runOutputName": "AIBimage",
-						"artifactTags": {
-						}
+					{   
+                    "type": "SharedImage",
+                    "galleryImageId": "/subscriptions/cfbcc491-d4a2-4247-85a3-e0d6eca3d36a/resourceGroups/WVD2-ResourceGroup-AIB/providers/Microsoft.Compute/galleries/HooksiesSharedImageGalleries/images/WVDGoldImage",
+                    "runOutputName": "[parameters('ManagedImageName')]",
+                    "artifactTags": {
+                        "source": "azureVmImageBuilder",
+                        "baseosimg": "windows-10-EVD",
+						"version": "[parameters('ManagedImageName')]"
+						},
+                    "replicationRegions": [
+                      "WestUS2",
+					  "EastUS2"
+						]
 					}
 				]
 			}
