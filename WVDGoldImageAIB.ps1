@@ -238,9 +238,3 @@ REG ADD "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v "KFMSilentOptIn" /t REG_S
 
 Write-Host "AIB PowerShell Script Complete"
 # Complete
-
-# Launch Sysprep
-
-Write-Host "We'll now launch Sysprep."
-#C:\Windows\System32\Sysprep\Sysprep.exe /generalize /oobe /shutdown
-C:\Windows\System32\Sysprep\Sysprep.exe
