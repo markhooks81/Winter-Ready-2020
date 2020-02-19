@@ -32,18 +32,20 @@ Get-AzResourceProvider -ProviderNamespace Microsoft.KeyVault | Select-Object Reg
 #*******Deploy Test AIB JSON and PowerShell Script*****************
 
 $TemplateFile = "C:\Users\mhooks\OneDrive - Microsoft\Windows Virtual Desktop\WVD_GoldImage_Configuration.json"
-New-AzResourceGroupDeployment -ResourceGroupName WVD2-ResourceGroup-AIB -TemplateFile $TemplateFile -OutVariable Output -Verbose
+$ResourceGroupAIB = "WVD2-ResourceGroup-AIB"
+New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupAIB -TemplateFile $TemplateFile -OutVariable Output -Verbose
 $ImageTemplateName = $Output.Outputs["imageTemplateName"].Value
-Invoke-AzResourceAction -ResourceGroupName WVD2-ResourceGroup-AIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run -Force
+Invoke-AzResourceAction -ResourceGroupName $ResourceGroupAIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run -Force
 
 #*****************************************************************
 
 #*******Deploy Test AIB/SIG JSON and PowerShell Script*****************
 
 $TemplateFile = "C:\Users\mhooks\OneDrive - Microsoft\Windows Virtual Desktop\WVD_GoldImage_Configuration_SIG.json"
-New-AzResourceGroupDeployment -ResourceGroupName WVD2-ResourceGroup-AIB -TemplateFile $TemplateFile -OutVariable Output -Verbose
+$ResourceGroupAIB = "WVD2-ResourceGroup-AIB"
+New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupAIB -TemplateFile $TemplateFile -OutVariable Output -Verbose
 $ImageTemplateName = $Output.Outputs["imageTemplateName"].Value
-Invoke-AzResourceAction -ResourceGroupName WVD2-ResourceGroup-AIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run -Force
+Invoke-AzResourceAction -ResourceGroupName $ResourceGroupAIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run -Force
 
 #*****************************************************************
 
@@ -51,9 +53,9 @@ Invoke-AzResourceAction -ResourceGroupName WVD2-ResourceGroup-AIB -ResourceType 
 
 #*******Build Image**********************************************
 $ImageTemplateName = $Output.Outputs["imageTemplateName"].Value
-Invoke-AzResourceAction -ResourceGroupName WVD2-ResourceGroup-AIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run
+Invoke-AzResourceAction -ResourceGroupName $ResourceGroupAIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -ResourceName $ImageTemplateName -Action Run
 
 #Check Status
-(Get-AzResource -ResourceGroupName WVD2-ResourceGroup-AIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -Name $ImageTemplateName).Properties.lastRunStatus
+(Get-AzResource -ResourceGroupName $ResourceGroupAIB -ResourceType Microsoft.VirtualMachineImages/imageTemplates -Name $ImageTemplateName).Properties.lastRunStatus
 
 #*****************************************************************
